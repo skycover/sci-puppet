@@ -1,0 +1,20 @@
+SkyCover Infrastructure Puppet recipes
+
+https://github.com/skycover/sci-puppet
+https://redmine.skycover.ru/projects/sci-cd/wiki
+
+This is the collection of the Puppet's recipes for autoconfiguration of
+SkyCover Infrastructure Debian/GNU Linux custom CD-ROM, which helps to install
+the complete high availability cluster infrastructure in less than a 1 hour.
+
+Currently present recipes:
+* APT proxy - approx with local CD-ROM image, sources.list deployment
+* DNS - bind9 chrooted, plus a special recipe with cluster domain zone and DDNS
+* DHCP - isc-dhcp-server, tuned for cluster's infrastructure and with DDNS
+* Technical exim4 - infrastructure to collect system mail from servers
+* Locale and Timezone
+* Common environment - common packages and config files for usability
+
+This recipes are included in the SCI-CD build
+ https://github.com/skycover/sci-cd, with the ability of update from
+ https://github.com/skycover/sci-puppet
