@@ -3,7 +3,7 @@ node 'default' {
 	class { common_profile: stage => pre1, }
 	class { timezone: zone => "Europe/Moscow", stage => main, }
 	class { locale: def_locale => "ru_RU.UTF-8", stage => main, }
-	class { exim4: smarthost => "default", stage => main, }
+	class { exim4: smarthost => "default", forward_to => 'root', stage => main, }
 }
 
 node 'sci' {
@@ -13,6 +13,6 @@ node 'sci' {
 	class { bind9_sci: stage => main, }
 	class { timezone: zone => "Europe/Moscow", stage => main, }
 	class { locale: def_locale => "ru_RU.UTF-8", stage => main, }
-	class { exim4: mailhub => yes, stage => main, }
+	class { exim4: mailhub => yes, forward_to => 'root', stage => main, }
 	class { dhcpd: enabled => no, stage => post1, }
 }
