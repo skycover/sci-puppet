@@ -12,16 +12,25 @@ $TTL 1h
 @ IN MX 10 mail.<%= domain %>.
      TXT   "v=spf1 a:mail.<%= domain %> -all"
 
+<% if has_variable?("sci_sci_lan_ip") -%>
+ns	IN A <%= sci_sci_lan_ip %>
+<% else -%>
 ns	IN A <%= ipaddress %>
+<% end -%>
 ; this is the wrong record. actual mail server should be different
+<% if has_variable?("sci_sci_lan_ip") -%>
+mail	IN A <%= sci_sci_lan_ip %>
+<% else -%>
 mail	IN A <%= ipaddress %>
+<% end -%>
+<% if has_variable?("sci_sci_lan_ip") -%>
+sci	IN A <%= sci_sci_lan_ip %>
+<% else -%>
 sci	IN A <%= ipaddress %>
+<% end -%>
 apt	CNAME sci
 ntp	CNAME sci
 puppet	CNAME sci
-<% if has_variable?("sci_sci_lan_ip") -%>
-sci-lan	IN A <%= sci_sci_lan_ip %>
-<% end -%>
 <%= sci_cluster_name %>	IN A <%= sci_cluster_ip %>
 <%= sci_node1_name %>	IN A <%= sci_node1_ip %>
 <% if has_variable?("sci_node1_lan_ip") -%>
