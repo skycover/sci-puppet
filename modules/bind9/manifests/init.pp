@@ -100,7 +100,8 @@ class bind9_sci inherits bind9_chroot {
 			Exec[ "/usr/local/sbin/relocate-bind9-chroot" ],
 		],
 	}
-	file { "/etc/bind/named.conf.local":
+
+	file { "/etc/bind/named.conf.local.puppet":
 		owner => "root",
 		group => "bind",
 		mode => 0640,
@@ -109,6 +110,17 @@ class bind9_sci inherits bind9_chroot {
 			Exec[ "/usr/local/sbin/relocate-bind9-chroot" ],
 		],
 	}
+	exec { 'divert named.conf.local':
+		command => '/bin/mv /etc/bind/named.conf.local /etc/bind/named.conf.local.dist; /usr/sbin/dpkg-divert --divert /etc/bind/named.conf.local.dist --rename /etc/bind/named.conf.local',
+		require => File["/etc/bind/named.conf.local.puppet"],
+		creates => "/etc/bind/named.conf.local.dist",
+	}
+	exec { 'copy named.conf.local':
+		command => "/bin/cp -a /etc/bind/named.conf.local.puppet /etc/bind/named.conf.local",
+		creates => "/etc/bind/named.conf.local",
+		require => Exec["divert named.conf.local"],
+	}
+
 	file { "/etc/bind/master":
 		owner => "bind",
 		group => "root",
@@ -116,6 +128,7 @@ class bind9_sci inherits bind9_chroot {
 		ensure => [directory, present],
 		require => Package['bind9'],
 	}
+
 	file { "/etc/bind/master/$domain.puppet":
 		owner => "bind",
 		group => "bind",
@@ -127,8 +140,9 @@ class bind9_sci inherits bind9_chroot {
 	}
 	exec { "/bin/cp -a /etc/bind/master/$domain.puppet /etc/bind/master/$domain":
 		require => File["/etc/bind/master/$domain.puppet"],
-		unless	=> "/usr/bin/test -e /etc/bind/master/$domain",
+		creates	=> "/etc/bind/master/$domain",
 	}
+
 	file { "/etc/bind/master/in-addr.puppet":
 		owner => "bind",
 		group => "bind",
@@ -140,8 +154,9 @@ class bind9_sci inherits bind9_chroot {
 	}
 	exec { "/bin/cp -a /etc/bind/master/in-addr.puppet /etc/bind/master/in-addr":
 		require => File["/etc/bind/master/in-addr.puppet"],
-		unless	=> '/usr/bin/test -e /etc/bind/master/in-addr',
+		creates	=> '/etc/bind/master/in-addr',
 	}
+
 	file { "/usr/local/sbin/create-dns-keys":
 		owner => "root",
 		group => "root",
@@ -151,18 +166,21 @@ class bind9_sci inherits bind9_chroot {
 			Exec[ "/usr/local/sbin/relocate-bind9-chroot" ],
 		],
 	}
+
 	# generate md5 for update auth
 	exec { "generate md5 for dns update auth":
 		command	=> '/usr/local/sbin/create-dns-keys',
-		unless	=> '/usr/bin/test -e /etc/bind/keys',
+		creates	=> '/etc/bind/keys',
 	} 
+
 	exec { "/usr/sbin/rndc reload":
 		subscribe => [ File[ "/etc/bind/named.conf.options",
-				   "/etc/bind/named.conf.local",
+				   "/etc/bind/named.conf.local.puppet",
 				   "/etc/bind/master/$domain.puppet",
 				   "/etc/bind/master/in-addr.puppet"
 				 ],
 					Exec[ "generate md5 for dns update auth" ],
+					Exec[ "copy named.conf.local" ],
 				],
 		refreshonly => true,
 	}
