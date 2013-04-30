@@ -1,52 +1,51 @@
 $TTL 1h
 
-<%= domain %>. IN SOA sci.<%= domain %>. postmaster.<%= domain %>. (
+<%= @domain %>. IN SOA <%= @hostname %>.<%= @domain %>. postmaster.<%= @domain %>. (
  0000000001 ; Serial
  4h         ; Refresh
  2h         ; Retry
  500h       ; Expire
  3h       ) ; Negative TTL
 
-@ IN NS sci.<%= domain %>.
+@ IN NS <%= @hostname %>.<%= @domain %>.
 
-@ IN MX 10 mail.<%= domain %>.
-     TXT   "v=spf1 a:mail.<%= domain %> -all"
+@ IN MX 10 mail.<%= @domain %>.
+     TXT   "v=spf1 a:mail.<%= @domain %> -all"
 
-<% if has_variable?("sci_sci_lan_ip") -%>
-ns	IN A <%= sci_sci_lan_ip %>
-<% else -%>
-ns	IN A <%= ipaddress %>
-<% end -%>
 ; this is the wrong record. actual mail server should be different
-<% if has_variable?("sci_sci_lan_ip") -%>
-mail	IN A <%= sci_sci_lan_ip %>
+<% if @sci_sci_lan_ip -%>
+mail	IN A <%= @sci_sci_lan_ip %>
 <% else -%>
-mail	IN A <%= ipaddress %>
+mail	IN A <%= @ipaddress %>
 <% end -%>
-<% if has_variable?("sci_sci_lan_ip") -%>
-sci	IN A <%= sci_sci_lan_ip %>
+<% if @sci_sci_lan_ip -%>
+<%= @hostname %>	IN A <%= @sci_sci_lan_ip %>
 <% else -%>
-sci	IN A <%= ipaddress %>
+<%= @hostname %>	IN A <%= @ipaddress %>
 <% end -%>
-apt	CNAME sci
-ntp	CNAME sci
-puppet	CNAME sci
-<%= sci_cluster_name %>	IN A <%= sci_cluster_ip %>
-<%= sci_node1_name %>	IN A <%= sci_node1_ip %>
-<% if has_variable?("sci_node1_lan_ip") -%>
-<%= sci_node1_name %>-lan	IN A <%= sci_node1_lan_ip %>
+apt	CNAME <%= @hostname %>
+ntp	CNAME <%= @hostname %>
+puppet	CNAME <%= @hostname %>
+<% if @sci_cluster_ip -%>
+<%= @sci_cluster_name %>	IN A <%= @sci_cluster_ip %>
 <% end -%>
-<% if has_variable?("sci_node1_san_ip") -%>
-<%= sci_node1_name %>-lan	IN A <%= sci_node1_san_ip %>
+<% if @sci_node1_ip -%>
+<%= @sci_node1_name %>	IN A <%= @sci_node1_ip %>
 <% end -%>
-<% if has_variable?("sci_node2_name") -%>
-<%= sci_node2_name %>	IN A <%= sci_node2_ip %>
+<% if @sci_node1_lan_ip -%>
+<%= @sci_node1_name %>-lan	IN A <%= @sci_node1_lan_ip %>
 <% end -%>
-<% if has_variable?("sci_node2_lan_ip") -%>
-<%= sci_node2_name %>-lan	IN A <%= sci_node2_lan_ip %>
+<% if @sci_node1_san_ip -%>
+<%= @sci_node1_name %>-san	IN A <%= @sci_node1_san_ip %>
 <% end -%>
-<% if has_variable?("sci_node2_san_ip") -%>
-<%= sci_node2_name %>-lan	IN A <%= sci_node2_san_ip %>
+<% if @sci_node2_name -%>
+<%= @sci_node2_name %>	IN A <%= @sci_node2_ip %>
+<% end -%>
+<% if @sci_node2_lan_ip -%>
+<%= @sci_node2_name %>-lan	IN A <%= @sci_node2_lan_ip %>
+<% end -%>
+<% if @sci_node2_san_ip -%>
+<%= @sci_node2_name %>-san	IN A <%= @sci_node2_san_ip %>
 <% end -%>
 
 ; here you can put any other records

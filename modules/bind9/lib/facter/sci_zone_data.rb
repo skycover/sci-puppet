@@ -85,7 +85,7 @@ Facter.add("sci_node2_lan_revip") do
 end
 Facter.add("sci_sci_revip") do
         setcode do
-                %x{cat /etc/hosts|grep sci|awk '{print $1}'|awk -F. '{print $4"."$3"."$2"."$1}'}.chomp
+                %x{facter ipaddress|awk -F. '{print $4"."$3"."$2"."$1}'}.chomp
         end
 end
 Facter.add("sci_sci_lan_ip") do
