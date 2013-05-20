@@ -2,7 +2,7 @@ ddns-update-style interim;
 ddns-updates on;
 allow-unknown-clients;
 autoritative;
-ddns-domainname "<%= domain %>";
+ddns-domainname "<%= @domain %>";
 update-static-leases on;
 allow client-updates;
 
@@ -13,25 +13,25 @@ key DHCP_UPDATE {
 
 
 
-subnet <%= sci_dhcp_subnet %> netmask <%= sci_dhcp_netmask %> {
+subnet <%= @sci_dhcp_subnet %> netmask <%= @sci_dhcp_netmask %> {
 	authoritative;
 	ddns-updates on;
-	range <%= sci_dhcp_hostmin %> <%= sci_dhcp_hostmax %>;
-	option routers <%= sci_dhcp_ipaddress %>;
-	option domain-name-servers <%= sci_dhcp_ipaddress %>;
-	option domain-name "<%= domain %>";
+	range <%= @sci_dhcp_hostmin %> <%= @sci_dhcp_hostmax %>;
+	option routers <%= sci_dhcp_route %>;
+	option domain-name-servers <% if sci_nameserver != "127.0.0.1" %><%= @sci_nameserver %><% else %><%= @sci_dhcp_ipaddress %><% end %>;
+	option domain-name "<%= @domain %>";
 	default-lease-time 604800;
 	max-lease-time 2592000;
 	}
 
 
-zone <%= domain %>. {
-	primary 127.0.0.1;
+zone <%= @domain %>. {
+	primary <%= @sci_nameserver %>;
 	key DHCP_UPDATE;
 }
 
 zone 168.192.in-addr.arpa. {
-	primary 127.0.0.1;
+	primary <%= @sci_nameserver %>;
 	key DHCP_UPDATE;
 }
 
