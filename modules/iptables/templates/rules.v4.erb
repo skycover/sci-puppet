@@ -1,0 +1,110 @@
+#
+# NAT TABLE
+#
+*nat
+:PREROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+# squid transparent
+#-A PREROUTING -p tcp -m tcp -i eth0 --dport 80 -j REDIRECT --to-port 3128
+# masquerade all on ext interface
+-A POSTROUTING -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> -j MASQUERADE
+COMMIT
+#
+# FILTER TABLE
+#
+*filter
+:FORWARD ACCEPT [0:0]
+:INPUT DROP [0:0]
+:OUTPUT DROP [0:0]
+
+#
+# Input
+#
+-A INPUT -i lo -j ACCEPT
+<% for i in @sci_int_interfaces.split(",") do -%>
+-A INPUT -i <%= i %> -j ACCEPT
+<% end -%>
+-A INPUT -m state -i <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --state RELATED,ESTABLISHED -j ACCEPT
+# ssh
+-A INPUT -p tcp -m tcp -i <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 22 -j ACCEPT
+# apache
+-A INPUT -p tcp -m tcp -i <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 80 -j ACCEPT
+# webmin
+-A INPUT -p tcp -m tcp -i <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 10000 -j ACCEPT
+# icmp
+-A INPUT -p icmp -m icmp -i <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --icmp-type any -j ACCEPT
+# ftp server
+-A INPUT -p tcp -m tcp -i <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 21 -j ACCEPT
+
+#
+# Output
+#
+-A OUTPUT -o lo -j ACCEPT
+<% for i in @sci_int_interfaces.split(",") do -%>
+-A OUTPUT -o <%= i %> -j ACCEPT
+<% end -%>
+-A OUTPUT -m state -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --state ESTABLISHED,RELATED -j ACCEPT
+# dns request
+-A OUTPUT -p udp -m udp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 53 -j ACCEPT
+# dns request(tcp)
+-A OUTPUT -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 53 -j ACCEPT
+# http,https
+-A OUTPUT -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 80 -j ACCEPT
+# ftp
+-A OUTPUT -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 21 -j ACCEPT
+# icmp
+-A OUTPUT -p icmp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> -j ACCEPT
+# ssh
+-A OUTPUT -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 22 -j ACCEPT
+# whois
+-A OUTPUT -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 43 -j ACCEPT
+# ntp
+-A OUTPUT -p udp -m udp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 123 -j ACCEPT
+
+#
+# Forward
+#
+-A FORWARD -o lo -j ACCEPT
+# change MTU
+-A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+# allow to local interfaces
+<% for i in @sci_int_interfaces.split(",") do -%>
+-A FORWARD -m state -o <%= i %> --state ESTABLISHED,RELATED -j ACCEPT
+<% end -%>
+-A FORWARD -m state -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --state ESTABLISHED,RELATED -j ACCEPT
+# dns request
+-A FORWARD -p udp -m udp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 53 -j ACCEPT
+# dns request(tcp)
+-A FORWARD -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 53 -j ACCEPT
+# https
+-A FORWARD -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 443 -j ACCEPT
+# jabber
+-A FORWARD -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 5222 -j ACCEPT
+# icq
+-A FORWARD -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 5190 -j ACCEPT
+# icmp
+-A FORWARD -p icmp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> -j ACCEPT
+#ftp
+-A FORWARD -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 21 -j ACCEPT
+# ssh
+-A FORWARD -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 22 -j ACCEPT
+# mail-smtp
+-A FORWARD -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 25 -j ACCEPT
+# mail-pop3
+-A FORWARD -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 110 -j ACCEPT
+# mail-imap
+-A FORWARD -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 143 -j ACCEPT
+# mail-imaps
+-A FORWARD -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 993 -j ACCEPT
+# mail-smtps
+-A FORWARD -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 587 -j ACCEPT
+# mail-smtps
+-A FORWARD -p tcp -m tcp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 465 -j ACCEPT
+# ntp
+-A FORWARD -p udp -m udp -o <% if @sci_ext_interface %><%= @sci_ext_interface %><% else %>eth1<% end %> --dport 123 -j ACCEPT
+# other loggin
+#-A FORWARD -j LOG --log-level info --log-prefix "FORWARD DROP "
+COMMIT
+# Completed on Fri Jul 10 19:05:29 2009
+
