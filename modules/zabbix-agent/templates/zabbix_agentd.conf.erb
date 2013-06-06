@@ -1,0 +1,30 @@
+#
+# rulled by puppet. resistance is futile.
+#
+# Hostname of Zabbix server
+ServerActive=<%= @zabbix_server %>
+# host's name, as registered in Zabbix Server
+Hostname=<%= fqdn %>
+StartAgents=0
+# every 5 minutes
+RefreshActiveChecks=300
+# use level 4 for problem debugging
+DebugLevel=3
+# spent no more than Timeout seconds on processing
+Timeout=3
+# OS-dependent settings
+
+# Real /proc/vmstat counters
+# counted in pages, not kb
+UserParameter=zbr.vmstat.si,awk '/^pswpin/{print $2; exit;}' /proc/vmstat
+UserParameter=zbr.vmstat.so,awk '/^pswpout/{print $2; exit;}' /proc/vmstat
+# really all block io, don't get confused with "pg"
+UserParameter=zbr.vmstat.bi,awk '/^pgpgin/{print $2; exit;}' /proc/vmstat
+UserParameter=zbr.vmstat.bo,awk '/^pgpgout/{print $2; exit;}' /proc/vmstat
+UserParameter=zbr.vfs.rw,awk  'BEGIN{while(getline<"/proc/mounts" == 1){if($2 == ARGV[1]){print $4 ~ /^ro,/?"ro":"rw"; exit}}print "none"; exit}'
+
+
+# Debian/GNU Linux
+PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix-agent/zabbix_agentd.log
+
