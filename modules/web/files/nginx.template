@@ -1,0 +1,46 @@
+server {
+        listen  80;
+        server_name sitename-changeme;
+	
+	root /home/username-changeme/www/sitename-changeme;
+	index index.php;
+
+        # logging
+#        access_log  /home/username-changeme/log/sitename-changeme.access.log;
+        error_log  /home/username-changeme/log/sitename-changeme.error.log;
+
+	location ~ ^.+\.php {
+		#notice: This seems to be an awful hack. Better refrain from using /.*\.php as route parts
+		#if php script don't exist, set scriptname /index.php
+		fastcgi_split_path_info ^(.+\.php)(.*)$;
+		set $custom_fastcgi_script_name $fastcgi_script_name;
+		if ( !-f $document_root$fastcgi_script_name){
+			set $custom_fastcgi_script_name '/index.php';
+		}
+
+		fastcgi_pass    unix:/var/run/php5-fpm/sitename-changeme.sock;
+		include         fastcgi_params;
+		fastcgi_index index.php;
+
+		fastcgi_param   SCRIPT_FILENAME $document_root$custom_fastcgi_script_name;
+		fastcgi_param   PATH_INFO       $fastcgi_path_info;
+		fastcgi_param   PATH_TRANSLATED $document_root$fastcgi_path_info;
+	}
+
+        location ~ /\.ht|\.tpl$ {
+                deny  all;
+        }
+
+	# default location
+	location / {
+		try_files $uri $uri/ =404;
+	}
+
+}
+
+# redirect to sitename-changeme
+server {
+	listen       80;
+	server_name  www.sitename-changeme;
+	return       301 http://sitename-changeme$request_uri;
+}
