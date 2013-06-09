@@ -1,0 +1,29 @@
+#!/bin/sh
+
+usage() {
+    echo "usage: $0 ext_port ext_interface int_addr:int_port"
+    echo "to forward port, or \"$0 close\" to close forwarded ports"
+    echo "example: $0 10000 eth1 192.168.10.101:5900"
+    echo "forwarding port 10000 on interface eth1 to 192.168.10.101 on port 5900"
+}
+
+case $# in
+    1)
+        if [ "$1" = "close" ]; then
+            iptables-restore < /etc/iptables/rules.v4;
+            exit 0;
+        else
+            usage;
+            exit 1;
+        fi
+        ;;
+    3)
+        iptables -t nat -A PREROUTING -p tcp -i "$2" --dport "$1" -j DNAT --to-destination "$3"
+        iptables -A FORWARD -i "$2" -d `echo $3|sed 's/:[0-9]*//'` -p tcp --dport `echo $3|sed 's/[0-9.]*://'` -j ACCEPT
+        ;;
+    *)
+            usage;
+            exit 1;
+        ;;
+esac
+
