@@ -1,0 +1,8 @@
+Alias	/lightsquid/	/usr/lib/cgi-bin/lightsquid/
+
+<Location "/lightsquid/">
+    Options +ExecCGI
+    AddHandler cgi-script .cgi
+    Order deny,allow
+</Location>
+
