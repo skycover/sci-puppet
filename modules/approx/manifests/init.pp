@@ -15,7 +15,7 @@ class approx {
 class approx_local {
 	include approx
 	$GPGDir = "/etc/sci/gpg"
-	$Release = "/media/sci/dists/squeeze/Release"
+	$Release = "/media/sci/dists/$lsbdistcodename/Release"
 	$approxModule = "/etc/puppet/modules/approx"
 
 	file { "/etc/sci":
