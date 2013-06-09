@@ -1,0 +1,11 @@
+[sitename-changeme]
+user = username-changeme
+group = username-changeme
+listen = /var/run/php5-fpm/sitename-changeme.sock
+listen.backlog = 4096
+pm = dynamic
+pm.max_children = 20
+pm.start_servers = 4
+pm.min_spare_servers = 3
+pm.max_spare_servers = 5
+chdir = /

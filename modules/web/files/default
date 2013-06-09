@@ -1,0 +1,17 @@
+server {
+	listen   80 default_server; ## listen for ipv4; this line is default and implied
+	server_name _; # This is just an invalid value which will never trigger on a real hostname.
+
+	root /usr/share/nginx/www;
+	index index.html index.htm;
+	server_name_in_redirect off;
+
+	# no logging
+	#	access_log /dev/null;
+	#	error_log /dev/null;
+
+	location / {
+		deny all;
+	}
+}
+
