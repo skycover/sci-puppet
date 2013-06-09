@@ -100,3 +100,13 @@ class sources_list_local {
 		subscribe => File['/etc/apt/sources.list'],
 	}
 }
+
+# workaround for http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=655986
+class approx_fix_cache {
+	if defined(Package['approx']) == true {
+		exec {'fix-approx-cache':
+			command => '/usr/bin/find /var/cache/approx -empty -type f -perm 0000 -delete; /usr/bin/find /var/cache/approx -mindepth 1 -empty -type d -delete; echo "43 3 * * * root find /var/cache/approx -empty -type f -perm 0000 -delete; find /var/cache/approx -mindepth 1 -empty -type d -delete" > /etc/cron.d/approx-fix-cache',
+			creates => '/etc/cron.d/approx-fix-cache',
+		}
+	}
+}
