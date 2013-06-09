@@ -9,7 +9,8 @@ class dhcpd($enabled=yes) {
 
         file { "/etc/dhcp/dhcpd.conf": }
 
-        exec { '/usr/sbin/dpkg-divert --divert /etc/dhcp/dhcpd.conf.dist --rename /etc/dhcp/dhcpd.conf; /bin/cp -a /etc/dhcp/dhcpd.conf.puppet /etc/dhcp/dhcpd.conf; /bin/sed -i "s/changeme/$(/bin/cat /etc/bind/keys|/bin/grep secret|/usr/bin/cut -f6 -d\' \')/" /etc/dhcp/dhcpd.conf':
+        exec { "dhcpd.conf-divert":
+                command => '/usr/sbin/dpkg-divert --divert /etc/dhcp/dhcpd.conf.dist --rename /etc/dhcp/dhcpd.conf; /bin/cp -a /etc/dhcp/dhcpd.conf.puppet /etc/dhcp/dhcpd.conf; /bin/sed -i "s/changeme/$(/bin/cat /etc/bind/keys|/bin/grep secret|/usr/bin/cut -f6 -d\' \')/" /etc/dhcp/dhcpd.conf',
                 require =>  File[ "/etc/dhcp/dhcpd.conf.puppet" ],
                 creates =>  [ "/etc/dhcp/dhcpd.conf", ],
         }
@@ -17,6 +18,8 @@ class dhcpd($enabled=yes) {
 if $enabled==yes {
         package {isc-dhcp-server:
                 ensure=> installed,
+                allowcdrom => true,
+                require => Exec['dhcpd.conf-divert'],
         }
 
         File [ '/etc/dhcp/dhcpd.conf' ] -> Package [ 'isc-dhcp-server' ]
