@@ -59,6 +59,11 @@ class web {
                 allowcdrom => true,
         }
 
+        package {pwgen:
+                ensure=> installed,
+                allowcdrom => true,
+        }
+
         file { "/var/run/php5-fpm":
                 owner => "root",
                 group => "root",
