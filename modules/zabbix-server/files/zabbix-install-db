@@ -1,0 +1,51 @@
+#!/bin/bash
+
+#vars
+disable_flag="/etc/zabbix/.puppet-disable"
+mysql_dump="/usr/local/share/zabbix-server-mysql/zabbix-server-mysql.sql"
+zabbix_config="/etc/zabbix/zabbix_server.conf"
+frontend_config="/etc/zabbix/zabbix.conf.php"
+mysqluser="debian-sys-maint"
+mysqlpass="$(cat /etc/mysql/debian.cnf|grep -m 1 password|cut -f3 -d' ')"
+dbuser="zabbix"
+dbname="zabbix"
+dbpassword="$(pwgen -s 12 -1)"
+
+# check disable flag
+if [ -f "$disable_flag" ]; then
+	echo "$disable_flag exist. exit."
+	exit 0
+fi
+
+# check if database exist
+if (mysql -u "$mysqluser" -p"$mysqlpass" -e "show databases;"|grep -q "$dbname") then
+	echo "mysqlbase $dbname already exists. Omitting database creation"
+else
+	mysql -u "$mysqluser" -p"$mysqlpass" -e "CREATE DATABASE \`$dbname\`;"
+	echo "mysqlbase $dbname created"
+fi
+
+# check if user exist
+if (mysql -u "$mysqluser" -p"$mysqlpass" -e "SELECT user, host FROM mysql.user WHERE host=\"localhost\" AND user=\"$dbuser\";"|grep -q "$dbuser") then
+	echo "mysqluser $dbuser already exists. Omitting user creation"
+else
+	mysql -u "$mysqluser" -p"$mysqlpass" -e "CREATE USER \`$dbuser\`@'localhost' IDENTIFIED BY \"$dbpassword\";"
+	echo "mysqluser $dbuser created"
+	mysql -u "$mysqluser" -p"$mysqlpass" -e "GRANT ALL PRIVILEGES ON \`$dbname\`.* TO \`$dbuser\`@'localhost';"
+	echo "granted all rights on db $dbname to user $dbuser"
+fi
+
+# populating db
+mysql -u "$mysqluser" -p"$mysqlpass" "$dbname" < "$mysql_dump"
+
+# copy and sed configs
+# zabbix_server.conf
+cp -a "$zabbix_config".puppet "$zabbix_config"
+sed -i "s/zabbix_password/$dbpassword/" "$zabbix_config"
+# zabbix.conf.php
+cp -a "$frontend_config".puppet "$frontend_config"
+sed -i "s/zabbix_password/$dbpassword/" "$frontend_config"
+
+touch "$disable_flag"
+
+exit 0
