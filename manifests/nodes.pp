@@ -6,6 +6,12 @@ node 'default' {
 	class { exim4: smarthost => "default", forward_to => 'root', stage => main, }
 }
 
+node 'gate' inherits default {
+	class { iptables: stage => main, }
+	class { squid: stage => main, }
+	class { traffic: stage => main, }
+}
+
 node 'sci' {
 	class { approx_local: stage => pre0, }
 	class { sources_list_local: stage => pre1, }
