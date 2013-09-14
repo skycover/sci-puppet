@@ -1,0 +1,4 @@
+#
+# rulled by puppet. resistance is futile
+#
+Alias	/zabbix/	/usr/share/zabbix/
