@@ -42,6 +42,14 @@ class traffic {
                 allowcdrom => true,
                 require => Exec['lightsquid.cfg-divert'],
         }
+
+        cron { "lightparser":
+                command => "/usr/share/lightsquid/lightparser.pl today > /dev/null 2>&1",
+                user    => root,
+                minute  => "*/10",
+                ensure  => present,
+                require => Package['lightsquid'],
+        }
 	
         package {bandwidthd:
                 ensure=> installed,
