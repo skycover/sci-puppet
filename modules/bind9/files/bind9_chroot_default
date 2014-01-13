@@ -1,3 +1,6 @@
+#
+# file is ruled by puppet. resistance is futile
+#
 # run resolvconf?
 RESOLVCONF=yes
 
