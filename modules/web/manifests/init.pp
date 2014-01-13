@@ -64,6 +64,16 @@ class web {
                 allowcdrom => true,
         }
 
+        package {libapache2-mod-php5:
+                ensure=> absent,
+                allowcdrom => true,
+        }
+
+        package {'apache2.2-bin':
+                ensure=> absent,
+                allowcdrom => true,
+        }
+
         file { "/var/run/php5-fpm":
                 owner => "root",
                 group => "root",
