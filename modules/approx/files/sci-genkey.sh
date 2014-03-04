@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# file is ruled by puppet. resistance is futile
+#
 export PATH=/usr/bin:/bin
 
 HOMEDIR=/etc/sci/gpg

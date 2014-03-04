@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# file is ruled by puppet. resistance is futile
+#
 
 #vars
 disable_flag="/etc/zabbix/.puppet-disable"

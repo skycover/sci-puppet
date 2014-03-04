@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# file is ruled by puppet. resistance is futile
+#
 set -e
 /etc/init.d/bind9 stop
 if [ -d /etc/bind -a -d /var/lib/named/etc -a ! -d /var/lib/named/etc/bind ]; then

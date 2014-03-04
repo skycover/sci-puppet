@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# file is ruled by puppet. resistance is futile
+#
 
 usage() {
     echo "usage: $0 ext_port ext_interface int_addr:int_port"

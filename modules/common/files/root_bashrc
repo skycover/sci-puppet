@@ -1,3 +1,7 @@
+#
+# file is ruled by puppet. resistance is futile
+#
+
 [ -z "$PS1" ] && return
 
 export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoredups
