@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# ruled by puppet. resistance is futile
+#
+
+echo $IFACE|grep -q eth && ethtool -K $IFACE tx off
+
+exit 0
