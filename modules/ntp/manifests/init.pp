@@ -3,7 +3,7 @@ class ntp {
 
 	file { '/etc/chrony/chrony.conf':
 		mode => 644, owner => root, group => root,
-		source => 'puppet:///modules/common/chrony.conf',
+		source => 'puppet:///modules/ntp/chrony.conf',
 		require => Package['chrony']
 	}
 
