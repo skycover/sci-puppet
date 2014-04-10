@@ -41,4 +41,18 @@ class common {
 		package => "vim",
 	}
 
+	# enable pluginsync
+	exec { "enable pluginsync":
+		command =>  '/bin/sed -i \'/\[main\]/ a\pluginsync = true\' /etc/puppet/puppet.conf',
+		unless => '/usr/bin/awk \'/\[main\]/ { getline; print $0 }\' /etc/puppet/puppet.conf|/bin/grep -q pluginsync',
+	}
+
+	file { '/etc/puppet/puppet.conf': }
+
+	service { puppet:
+		hasrestart => true,
+		subscribe =>  File[ "/etc/puppet/puppet.conf" ],
+		require =>  Exec[ "enable pluginsync" ],
+	}
+
 }
