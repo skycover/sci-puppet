@@ -5,6 +5,7 @@ node 'default' {
 	class { locale: def_locale => "ru_RU.UTF-8", stage => main, }
 	class { ntp: stage => main, }
 	class { exim4: smarthost => "default", forward_to => 'root', stage => main, }
+	class { security-updates: stage => main, }
 }
 
 node 'sci' {
@@ -18,4 +19,5 @@ node 'sci' {
 	class { exim4: mailhub => yes, forward_to => 'root', stage => main, }
 	class { dhcpd: enabled => no, stage => post1, }
 	class { approx_fix_cache: stage => post1, }
+	class { security-updates: stage => main, }
 }
