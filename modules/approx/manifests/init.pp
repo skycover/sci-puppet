@@ -93,6 +93,20 @@ class sources_list_local {
 		owner => "root", group => "root", mode => 0644,
 		content => template("approx/sources.list.erb"),
 	}
+	file { "/etc/apt/apt.conf.d/11periodic":
+		owner => "root", group => "root", mode => 0644,
+		source => 'puppet:///modules/approx/11periodic',
+	}
+	file { "/etc/apt/apt.conf.d/99stable":
+		owner => "root", group => "root", mode => 0644,
+		source  => $lsbdistcodename ? {
+			'squeeze' => 'puppet:///modules/approx/99stable.squeeze',
+			'wheezy' => 'puppet:///modules/approx/99stable.wheezy',
+			'lenny' => 'puppet:///modules/approx/99stable.lenny',
+			'precise' => 'puppet:///modules/approx/99stable.precise',
+			default => 'puppet:///modules/approx/99stable.wheezy',
+		},
+	}
 	exec{ apt-get-update:
 		command => '/usr/bin/apt-get update',
 		refreshonly => true,

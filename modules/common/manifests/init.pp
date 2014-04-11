@@ -10,6 +10,7 @@ class common {
 		  'bash-completion',
 		  'zsh',
 		  'htop',
+		  'lsb-release',
 		]:
 		ensure => installed
 	}
