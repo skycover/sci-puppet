@@ -116,6 +116,14 @@ class web {
                 source => "puppet:///modules/web/nginx_ensite",
         }
 
+        file { "/etc/mysql/conf.d/lang.cnf":
+                owner => "root",
+                group => "root",
+                mode => 644,
+                source => "puppet:///modules/web/lang.cnf",
+                require => Package['mysql-server'],
+        }
+
         file { "/etc/nginx/sites-available/default":
                 owner => "root",
                 group => "root",
