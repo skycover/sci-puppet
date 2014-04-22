@@ -21,3 +21,10 @@ node 'sci' {
 	class { approx_fix_cache: stage => post1, }
 	class { security-updates: stage => main, }
 }
+
+node 'gate' inherits default {
+	class { iptables: stage => main, }
+	class { squid: stage => main, }
+	class { traffic: stage => main, }
+}
+

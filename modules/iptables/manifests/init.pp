@@ -7,6 +7,13 @@ class iptables {
 				source => "puppet:///modules/iptables/forwardport",
         }
 
+        file { "/etc/modprobe.d/firewall.conf":
+                owner => "root",
+                group => "root",
+                mode => 644,
+				source => "puppet:///modules/iptables/modules.conf",
+        }
+
         file { "/etc/sysctl.d/firewall.conf":
                 owner => "root",
                 group => "root",
@@ -14,7 +21,7 @@ class iptables {
 				source => "puppet:///modules/iptables/firewall.conf",
         }
 
-        exec { "/sbin/sysctl -p":
+        exec { "/sbin/sysctl -p /etc/sysctl.d/firewall.conf":
                 subscribe => File[ "/etc/sysctl.d/firewall.conf" ],
                 refreshonly => true,
                 require => File[ "/etc/sysctl.d/firewall.conf" ],
