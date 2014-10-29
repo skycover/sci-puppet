@@ -89,9 +89,17 @@ class sources_list_local {
 		notify => Exec["apt-get-update"],
 		refreshonly => true,
 	}
-	file { "/etc/apt/sources.list":
-		owner => "root", group => "root", mode => 0644,
-		content => template("approx/sources.list.erb"),
+	if $operatingsystem == "Debian" {
+		file { "/etc/apt/sources.list":
+			owner => "root", group => "root", mode => 0644,
+			content => template("approx/sources.list.erb"),
+		}
+	}
+	if $operatingsystem == "Ubuntu" {
+		file { "/etc/apt/sources.list":
+			owner => "root", group => "root", mode => 0644,
+			content => template("approx/sources.list.ubuntu.erb"),
+		}
 	}
 	file { "/etc/apt/apt.conf.d/11periodic":
 		owner => "root", group => "root", mode => 0644,
@@ -104,6 +112,7 @@ class sources_list_local {
 			'wheezy' => 'puppet:///modules/approx/99stable.wheezy',
 			'lenny' => 'puppet:///modules/approx/99stable.lenny',
 			'precise' => 'puppet:///modules/approx/99stable.precise',
+			'trusty' => 'puppet:///modules/approx/99stable.trusty',
 			default => 'puppet:///modules/approx/99stable.wheezy',
 		},
 	}

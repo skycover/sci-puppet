@@ -1,0 +1,6 @@
+#
+# file is ruled by puppet. resistance is futile
+#
+deb http://apt.<%= domain %>:9999/ubuntu <%= lsbdistcodename %> main non-free contrib
+deb http://apt.<%= domain %>:9999/ubuntu <%= lsbdistcodename %>-updates main non-free contrib
+deb http://apt.<%= domain %>:9999/ubuntu <%= lsbdistcodename %>-backports main contrib non-free
