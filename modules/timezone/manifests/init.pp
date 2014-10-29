@@ -1,7 +1,7 @@
 # timezone module from https://github.com/attachmentgenie/puppet-module-timezone
 class timezone($zone='UTC') {
   package { 'tzdata':
-    ensure => present,
+    ensure => latest,
   }
 
   file { '/etc/timezone':
