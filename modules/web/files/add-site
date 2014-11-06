@@ -94,8 +94,8 @@ function create_user {
 	chown $user:www-data $home $home/www
 	chmod 710 $home $home/www
 	mkdir $home/log
-	chown $user:www-data $home/log
-	chmod 770 $home/log
+	chown www-data:root $home/log
+	chmod 755 $home/log
 }
 
 function create_site {

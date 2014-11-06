@@ -124,6 +124,14 @@ class web {
                 require => Package['mysql-server'],
         }
 
+        file { "/etc/logrotate.d/nginx-vhosts":
+                owner => "root",
+                group => "root",
+                mode => 644,
+                source => "puppet:///modules/web/nginx-vhosts",
+                require => Package['nginx-full'],
+        }
+
         file { "/etc/nginx/sites-available/default":
                 owner => "root",
                 group => "root",
