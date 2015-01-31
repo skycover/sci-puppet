@@ -3,6 +3,9 @@ class security-updates {
 
 	package { openssh-server: ensure => latest }
 
+# GHOST
+    package { libc-bin: ensure => latest }
+
 # hearbleed
 	if $operatingsystem == "Debian" {
 		if $lsbdistcodename == "wheezy" {
