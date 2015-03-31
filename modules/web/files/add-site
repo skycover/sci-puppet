@@ -9,6 +9,7 @@
 
 user="$1"
 sitename="$2"
+user_pass="$(gpw 1 8)" 
 nginx_template="/etc/add-site/nginx.template"
 php_template="/etc/add-site/php-fpm.template"
 nginx_conf="/etc/nginx/sites-available"
@@ -17,19 +18,14 @@ home="/home/$user"
 mysqluser=debian-sys-maint
 mysqlpass="$(cat /etc/mysql/debian.cnf|grep -m 1 password|cut -f3 -d' ')"
 mysqlgenpass="$(pwgen -s 12 -1)"
-# set user nonexist (will be checked)
-user_flag=false
 
 # usage show
 usage(){
-	echo "usage: $0 user [sitename]"
-	echo "$0 user creates user and home dirs if not exist"
-	echo ""
-	echo "$0 user sitename creates user if not exist and create"
-	echo "/home/\$user/www/\$sitename directory"
-	echo "creates /etc/nginx/sites-available/\$sitename and"
-	echo "/etc/php5/pfm/pool.d/\$sitename.conf from templates"
-	echo "creates mysqlbase \$sitename and mysql user \$sitename"
+	echo "$0 user sitename creates system user, set random password"
+	echo "creates /home/\$user/www directory"
+	echo "creates /etc/nginx/sites-available/\$user and"
+	echo "/etc/php5/pfm/pool.d/\$user.conf from templates"
+	echo "creates mysqlbase \$user and mysql user \$user"
 	echo "grant all privileges to new user on new base"
 	echo "generate password for new user and echo it on console"
 }
@@ -37,18 +33,6 @@ usage(){
 #
 #check args
 #
-
-# check username format
-if !(echo "$user"|grep -q -E "^[a-z_][a-z0-9_\-]*[\$]?$"); then
-	echo "invalid username format"
-	usage
-	exit 1
-fi
-
-# check_username_exist
-if (getent passwd|grep -q "$user"); then
-	user_flag=true
-fi
 
 function check_sitename_format {
 	if !( echo "$sitename"|grep -q -E "^[a-z0-9][a-z.0-9\-]*[a-z]$"); then
@@ -71,8 +55,6 @@ function check_sitename_exist {
 
 #check number of args
 case $# in
-	1)
-		;;
 	2)
 		check_sitename_format "$sitename"
 		check_sitename_exist "$sitename"
@@ -83,6 +65,22 @@ case $# in
 		;;
 esac
 
+# check username format
+if !(echo "$user"|grep -q -E "^[a-z_][a-z0-9_\-]*[\$]?$"); then
+	echo "ERROR: invalid username format"
+	echo
+	usage
+	exit 1
+fi
+
+# check_username_exist
+if (getent passwd|grep -q "$user"); then
+	echo "ERROR: username already exist"
+	echo
+	usage
+	exit 1
+fi
+
 #
 # actions
 #
@@ -90,6 +88,8 @@ esac
 function create_user {
 	echo "creating system user $user"
 	useradd -m -s/bin/bash -d$home $user
+	echo "$user":"$user_pass" | chpasswd
+	echo "System user password is: $user_pass"
 	mkdir $home/www
 	chown $user:www-data $home $home/www
 	chmod 710 $home $home/www
@@ -100,63 +100,47 @@ function create_user {
 
 function create_site {
 	echo "creating nginx config, php config, directory"
-	sed "s/sitename-changeme/$sitename/g;s/username-changeme/$user/g" $nginx_template > $nginx_conf/"$sitename"
-	sed "s/sitename-changeme/$sitename/g;s/username-changeme/$user/g" $php_template > $php_conf/"$sitename".conf
+	sed "s/sitename-changeme/$sitename/g;s/username-changeme/$user/g" $nginx_template > $nginx_conf/"$user"
+	sed "s/sitename-changeme/$sitename/g;s/username-changeme/$user/g" $php_template > $php_conf/"$user".conf
+	nginx_ensite $user > /dev/null 2>&1
 	mkdir $home/www/"$sitename"
 	chown $user:www-data $home/www/"$sitename"
 	cat <<EOF
-You should check $nginx_conf/"$sitename" and $php_conf/"$sitename".conf
+You should check $nginx_conf/"$user" and $php_conf/"$user".conf
 Next issue
 # /etc/init.d/php5-fpm reload
-# nginx_ensite $sitename
+# /etc/init.d/nginx reload
 EOF
 }
 
 
 function create_mysqlbase {
 	# check if database exist
-	if (mysql -u "$mysqluser" -p"$mysqlpass" -e "show databases;"|grep -q "$sitename") then
-		echo "mysqlbase $sitename already exists. Omitting database creation"
+	if (mysql -u "$mysqluser" -p"$mysqlpass" -e "show databases;"|grep -q "$user") then
+		echo "mysqlbase $user already exists. Omitting database creation"
 	else
-		mysql -u "$mysqluser" -p"$mysqlpass" -e "CREATE DATABASE \`$sitename\`;"
-		echo "mysqlbase $sitename created"
+		mysql -u "$mysqluser" -p"$mysqlpass" -e "CREATE DATABASE \`$user\`;"
+		echo "mysqlbase $user created"
 	fi
 }
 
 function create_mysqluser {
 	# check if user exist
-	if (mysql -u "$mysqluser" -p"$mysqlpass" -e "SELECT user, host FROM mysql.user WHERE host=\"localhost\" AND user=\"$sitename\";"|grep -q "$sitename") then
-		echo "mysqluser $sitename already exists. Omitting user creation"
+	if (mysql -u "$mysqluser" -p"$mysqlpass" -e "SELECT user, host FROM mysql.user WHERE host=\"localhost\" AND user=\"$user\";"|grep -q "$user") then
+		echo "mysqluser $user already exists. Omitting user creation"
 	else
-		mysql -u "$mysqluser" -p"$mysqlpass" -e "CREATE USER \`$sitename\`@'localhost' IDENTIFIED BY \"$mysqlgenpass\";"
-		echo "mysqluser $sitename created"
-		mysql -u "$mysqluser" -p"$mysqlpass" -e "GRANT ALL PRIVILEGES ON \`$sitename\`.* TO \`$sitename\`@'localhost';"
-		echo "granted all rights on db $sitename to user $sitename"
-		echo "mysql password for user $sitename is: $mysqlgenpass"
+		mysql -u "$mysqluser" -p"$mysqlpass" -e "CREATE USER \`$user\`@'localhost' IDENTIFIED BY \"$mysqlgenpass\";"
+		echo "mysqluser $user created"
+		mysql -u "$mysqluser" -p"$mysqlpass" -e "GRANT ALL PRIVILEGES ON \`$user\`.* TO \`$user\`@'localhost';"
+		echo "granted all rights on db $user to user $user"
+		echo "mysql password for user $user is: $mysqlgenpass"
 	fi
 }
 
-case $# in
-1)
-	if [[ "$user_flag" == "false" ]]; then
-		create_user
-	else
-		echo "user $user already exist"
-	fi
-;;
-
-2)
-	if [[ "$user_flag" == "false" ]]; then
-		create_user
-	else
-		echo "user $user already exist"
-	fi
-	create_site
-	create_mysqlbase
-	create_mysqluser
-;;
-
-esac
+# exec functions
+create_user
+create_site
+create_mysqlbase
+create_mysqluser
 
 exit 0
-

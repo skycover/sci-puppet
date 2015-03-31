@@ -2,12 +2,12 @@ server {
         listen  80;
         server_name sitename-changeme;
 	
-	root /home/username-changeme/www/sitename-changeme;
+	root /home/username-changeme/www;
 	index index.php;
 
         # logging
-#        access_log  /home/username-changeme/log/sitename-changeme.access.log;
-        error_log  /home/username-changeme/log/sitename-changeme.error.log;
+#        access_log  /home/username-changeme/log/access.log;
+        error_log  /home/username-changeme/log/error.log;
 
 	location ~ ^.+\.php {
 		#notice: This seems to be an awful hack. Better refrain from using /.*\.php as route parts
@@ -18,7 +18,7 @@ server {
 			set $custom_fastcgi_script_name '/index.php';
 		}
 
-		fastcgi_pass    unix:/var/run/php5-fpm/sitename-changeme.sock;
+		fastcgi_pass    unix:/var/run/username-changeme.sock;
 		include         fastcgi_params;
 		fastcgi_index index.php;
 

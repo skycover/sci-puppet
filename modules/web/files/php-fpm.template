@@ -1,7 +1,7 @@
-[sitename-changeme]
+[username-changeme]
 user = username-changeme
 group = username-changeme
-listen = /var/run/sitename-changeme.sock
+listen = /var/run/username-changeme.sock
 listen.backlog = 4096
 pm = dynamic
 pm.max_children = 20
