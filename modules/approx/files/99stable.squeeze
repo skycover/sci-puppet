@@ -1,4 +1,4 @@
 //
 //  rulled by puppet. resistance is futile.
 //
-APT::Default-Release "oldstable";
+APT::Default-Release "squeeze-lts";
