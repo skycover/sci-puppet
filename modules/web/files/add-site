@@ -103,8 +103,6 @@ function create_site {
 	sed "s/sitename-changeme/$sitename/g;s/username-changeme/$user/g" $nginx_template > $nginx_conf/"$user"
 	sed "s/sitename-changeme/$sitename/g;s/username-changeme/$user/g" $php_template > $php_conf/"$user".conf
 	nginx_ensite $user > /dev/null 2>&1
-	mkdir $home/www/"$sitename"
-	chown $user:www-data $home/www/"$sitename"
 	cat <<EOF
 You should check $nginx_conf/"$user" and $php_conf/"$user".conf
 Next issue
