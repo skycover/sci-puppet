@@ -117,7 +117,7 @@ function create_mysqlbase {
 	if (mysql -u "$mysqluser" -p"$mysqlpass" -e "show databases;"|grep -q "$user") then
 		echo "mysqlbase $user already exists. Omitting database creation"
 	else
-		mysql -u "$mysqluser" -p"$mysqlpass" -e "CREATE DATABASE \`$user\`;"
+		mysql -u "$mysqluser" -p"$mysqlpass" -e "CREATE DATABASE \`$user\` CHARACTER SET utf8 COLLATE utf8_general_ci;"
 		echo "mysqlbase $user created"
 	fi
 }

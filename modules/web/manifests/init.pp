@@ -64,6 +64,11 @@ class web {
                 allowcdrom => true,
         }
 
+        package {gpw:
+                ensure=> installed,
+                allowcdrom => true,
+        }
+
         package {libapache2-mod-php5:
                 ensure=> absent,
                 allowcdrom => true,
