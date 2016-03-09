@@ -1,9 +1,9 @@
 class denyhosts {
 
-# dummy code
-file { "/tmp/nonexist.denyhosts": }
 
-if $lsbdistcodename != trusty {
+case $lsbdistcodename {
+'jessie', 'trusty':{ file { "/tmp/nonexist.denyhosts": } }
+default: {
 	package { denyhosts: ensure => installed }
 
 	file { "/etc/denyhosts.conf":
@@ -36,6 +36,8 @@ if $lsbdistcodename != trusty {
 		subscribe => File["/etc/denyhosts.conf"],
 	}
 }
+}
 
 }
+
 
