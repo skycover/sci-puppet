@@ -90,10 +90,18 @@ class sources_list_local {
 		refreshonly => true,
 	}
 	if $operatingsystem == "Debian" {
-		file { "/etc/apt/sources.list":
-			owner => "root", group => "root", mode => 0644,
-			content => template("approx/sources.list.erb"),
+		if $lsbdistcodename == "squeeze" {
+			file { "/etc/apt/sources.list":
+				owner => "root", group => "root", mode => 0644,
+				content => template("approx/sources.list.squeeze.erb"),
+			}
+		} else {
+			file { "/etc/apt/sources.list":
+				owner => "root", group => "root", mode => 0644,
+				content => template("approx/sources.list.erb"),
+			}
 		}
+
 	}
 	if $operatingsystem == "Ubuntu" {
 		file { "/etc/apt/sources.list":
