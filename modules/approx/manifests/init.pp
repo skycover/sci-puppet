@@ -118,6 +118,7 @@ class sources_list_local {
 		source  => $lsbdistcodename ? {
 			'squeeze' => 'puppet:///modules/approx/99stable.squeeze',
 			'wheezy' => 'puppet:///modules/approx/99stable.wheezy',
+			'jessie' => 'puppet:///modules/approx/99stable.jessie',
 			'lenny' => 'puppet:///modules/approx/99stable.lenny',
 			'precise' => 'puppet:///modules/approx/99stable.precise',
 			'trusty' => 'puppet:///modules/approx/99stable.trusty',

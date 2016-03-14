@@ -1,0 +1,4 @@
+//
+//  rulled by puppet. resistance is futile.
+//
+APT::Default-Release "jessie";
