@@ -67,28 +67,31 @@ class approx_local {
 }
 
 # sources.list with apt key for local repos
-class sources_list_local {
-	if defined(File['/etc/sci']) == false {
-	file { "/etc/sci":
-		owner => "root",
-		group => "root",
-		mode => 0755,
-		ensure => [directory, present],
+class sources_list($local_sources=yes) {
+	if local_sources == yes {
+		if defined(File['/etc/sci']) == false {
+		file { "/etc/sci":
+			owner => "root",
+			group => "root",
+			mode => 0755,
+			ensure => [directory, present],
+			}
+		}
+
+		file { "/etc/sci/sci.pub":
+			owner => "root", group => "root", mode => 0644,
+			source => 'puppet:///modules/approx/sci.pub',
+			require => File["/etc/sci"],
+		}
+		exec { apt-key-add-sci:
+			command => "/usr/bin/apt-key add /etc/sci/sci.pub",
+			require => File["/etc/sci/sci.pub"],
+			subscribe => File["/etc/sci/sci.pub"],
+			notify => Exec["apt-get-update"],
+			refreshonly => true,
 		}
 	}
 
-	file { "/etc/sci/sci.pub":
-		owner => "root", group => "root", mode => 0644,
-		source => 'puppet:///modules/approx/sci.pub',
-		require => File["/etc/sci"],
-	}
-	exec { apt-key-add-sci:
-		command => "/usr/bin/apt-key add /etc/sci/sci.pub",
-		require => File["/etc/sci/sci.pub"],
-		subscribe => File["/etc/sci/sci.pub"],
-		notify => Exec["apt-get-update"],
-		refreshonly => true,
-	}
 	if $operatingsystem == "Debian" {
 		if $lsbdistcodename == "squeeze" {
 			file { "/etc/apt/sources.list":
@@ -125,11 +128,19 @@ class sources_list_local {
 			default => 'puppet:///modules/approx/99stable.wheezy',
 		},
 	}
-	exec{ apt-get-update:
-		command => '/usr/bin/apt-get update',
-		refreshonly => true,
-		require => File["/etc/sci/sci.pub"],
-		subscribe => File['/etc/apt/sources.list'],
+	if local_sources == yes {
+		exec{ apt-get-update:
+			command => '/usr/bin/apt-get update',
+			refreshonly => true,
+			require => File["/etc/sci/sci.pub"],
+			subscribe => File['/etc/apt/sources.list'],
+		}
+	} else {
+		exec{ apt-get-update:
+			command => '/usr/bin/apt-get update',
+			refreshonly => true,
+			subscribe => File['/etc/apt/sources.list'],
+		}
 	}
 }
 

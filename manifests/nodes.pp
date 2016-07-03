@@ -1,5 +1,5 @@
 node 'default' {
-	class { sources_list_local: stage => pre0, }
+	class { sources_list: stage => pre0, local_sources => yes, }
 	class { common: stage => pre1, }
 	class { timezone: zone => "Europe/Moscow", stage => main, }
 	class { locale: def_locale => "ru_RU.UTF-8", stage => main, }
@@ -10,7 +10,7 @@ node 'default' {
 
 node 'sci' {
 	class { approx_local: stage => pre0, }
-	class { sources_list_local: stage => pre1, }
+	class { sources_list: stage => pre1, local_sources => yes, }
 	class { common: stage => pre2, }
 	class { bind9_sci: stage => main, }
 	class { timezone: zone => "Europe/Moscow", stage => main, }
