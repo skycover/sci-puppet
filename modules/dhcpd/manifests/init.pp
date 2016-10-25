@@ -30,10 +30,5 @@ if $enabled==yes {
                 require => Package['isc-dhcp-server'],
         }
 }
-else {
-        package {isc-dhcp-server:
-                ensure=> absent,
-        }
-}
 
 }
