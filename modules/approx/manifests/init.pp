@@ -68,7 +68,7 @@ class approx_local {
 
 # sources.list with apt key for local repos
 class sources_list($local_sources=yes) {
-	if local_sources == yes {
+	if $local_sources == yes {
 		if defined(File['/etc/sci']) == false {
 		file { "/etc/sci":
 			owner => "root",
@@ -128,7 +128,7 @@ class sources_list($local_sources=yes) {
 			default => 'puppet:///modules/approx/99stable.wheezy',
 		},
 	}
-	if local_sources == yes {
+	if $local_sources == yes {
 		exec{ apt-get-update:
 			command => '/usr/bin/apt-get update',
 			refreshonly => true,
