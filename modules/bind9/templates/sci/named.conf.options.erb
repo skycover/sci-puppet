@@ -15,7 +15,7 @@ options {
 
 	<% if has_variable?("sci_dns_forwarders") %>
 	forwarders {
-		<%= sci_dns_forwarders %>
+		<%= sci_dns_forwarders %>;
 	};
 	forward only;
 	<% else %>
