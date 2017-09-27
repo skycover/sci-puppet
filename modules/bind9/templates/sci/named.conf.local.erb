@@ -7,9 +7,9 @@
 //include "/etc/bind/zones.rfc1918";
 include "/etc/bind/keys";
 
-zone "<%= domain %>" in {
+zone "<%= @domain %>" in {
  type master;
- file "/etc/bind/master/<%= domain %>";
+ file "/etc/bind/master/<%= @domain %>";
  allow-query    { any; };
  allow-update{ key DHCP_UPDATE; };
 };
