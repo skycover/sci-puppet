@@ -17,7 +17,7 @@ node 'sci' {
 	class { locale: def_locale => "ru_RU.UTF-8", stage => main, }
 	class { ntp: stage => main, }
 	class { exim4: mailhub => yes, forward_to => 'root', stage => main, }
-	class { dhcpd: enabled => yes, stage => post1, }
+	class { dhcpd: enabled => no, stage => post1, }
 	class { approx_fix_cache: stage => post1, }
 	class { security_updates: stage => main, }
 }
