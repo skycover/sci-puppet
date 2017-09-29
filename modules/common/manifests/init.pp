@@ -10,6 +10,7 @@ class common {
 		  'bash-completion',
 		  'zsh',
 		  'htop',
+		  'man',
 		  'lsb-release',
 		  'aptitude',
 		]:

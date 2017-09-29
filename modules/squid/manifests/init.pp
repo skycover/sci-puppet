@@ -26,7 +26,7 @@ class squid {
         file { "/etc/squid/squid.conf": }
 
         exec { "squid.conf-divert":
-                command => '/usr/sbin/dpkg-divert --divert /etc/squid/squid.conf.dist --rename /etc/squid/squid.conf; /bin/cp -a /etc/squid/squid.conf.puppet /etc/squid/squid.conf',
+                command => '/usr/bin/dpkg-divert --divert /etc/squid/squid.conf.dist --rename /etc/squid/squid.conf; /bin/cp -a /etc/squid/squid.conf.puppet /etc/squid/squid.conf',
                 require =>  File[ "/etc/squid/squid.conf.puppet" ],
                 creates =>  [ "/etc/squid/squid.conf", ],
         }

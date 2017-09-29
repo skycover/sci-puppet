@@ -114,7 +114,7 @@ class bind9_sci inherits bind9_chroot {
 		],
 	}
 	exec { 'divert named.conf.local':
-		command => '/bin/mv /etc/bind/named.conf.local /etc/bind/named.conf.local.dist; /usr/sbin/dpkg-divert --divert /etc/bind/named.conf.local.dist --rename /etc/bind/named.conf.local',
+		command => '/bin/mv /etc/bind/named.conf.local /etc/bind/named.conf.local.dist; /usr/bin/dpkg-divert --divert /etc/bind/named.conf.local.dist --rename /etc/bind/named.conf.local',
 		require => File["/etc/bind/named.conf.local.puppet"],
 		creates => "/etc/bind/named.conf.local.dist",
 	}
