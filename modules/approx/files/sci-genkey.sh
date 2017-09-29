@@ -18,24 +18,7 @@ chmod 700 $HOMEDIR
 # ...but sha256sum too:
 # http://aaronhawley.livejournal.com/10807.html
 # but computers are too fast nowdays...
-(while [ ! -s $HOMEDIR/secring.gpg ]; do
-  if [ -n "$ENTROPY" ]; then
-    if ps -ef | grep find | awk '{ print $2 }' | grep -q ${ENTROPY}; then 
-      sleep 60
-    else
-      echo restarting random generator
-      find / -xdev -type f -exec sha256sum {} >/dev/null \; 2>&1 &
-      export ENTROPY=$!
-    fi
-  else
-      # XXX ugly? hmmm...
-      find / -xdev -type f -exec sha256sum {} >/dev/null \; 2>&1 &
-      export ENTROPY=$!
-  fi
-done
-  ps -ef | grep find | awk '{ print $2 }' | grep -q ${ENTROPY} && kill ${ENTROPY}
-  killall -q sha256sum
-) &
+rngd -r /dev/urandom
 
 gpg --homedir $HOMEDIR --no-options --batch --gen-key $HOMEDIR/sci-key-input
 
