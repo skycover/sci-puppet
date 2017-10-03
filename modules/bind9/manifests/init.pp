@@ -18,6 +18,7 @@ class bind9_chroot {
 	file { [
 		"/var/lib/named/var/cache/bind",
 		"/var/lib/named/var/run",
+		"/var/lib/named/run",
 		"/var/lib/named/var/log",
 	       ]:
 		owner => "bind",
