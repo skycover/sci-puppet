@@ -10,7 +10,7 @@ class common {
 		  'bash-completion',
 		  'zsh',
 		  'htop',
-		  'man',
+		  'man-db',
 		  'lsb-release',
 		  'aptitude',
 		]:
@@ -37,6 +37,13 @@ class common {
 		name => '/etc/vim/vimrc.local',
 		mode => "644", owner => root, group => root,
 		source => 'puppet:///modules/common/vimrc.local',
+		require => Package['vim']
+	}
+
+	file { 'vimrc':
+		name => '/etc/vim/vimrc',
+		mode => "644", owner => root, group => root,
+		source => 'puppet:///modules/common/vimrc',
 		require => Package['vim']
 	}
 
