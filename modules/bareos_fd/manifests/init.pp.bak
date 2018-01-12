@@ -1,0 +1,33 @@
+class bareos_fd {
+
+	file { "/etc/bareos/bareos-fd.conf.puppet":
+		owner   => root,
+		group   => root,
+		mode    => "644",
+		content => template("bareos_fd/bareos-fd.conf.erb"),
+		require => Package['bareos-client'],
+	}
+
+	file { "/etc/bareos/bareos-fd.conf": }
+
+	exec { "bareos-fd.conf-divert":
+		command => 'dpkg-divert --divert /etc/bareos/bareos-fd.conf.dist --rename /etc/bareos/bareos-fd.conf; /bin/cp -a /etc/bareos/bareos-fd.conf.puppet /etc/bareos/bareos-fd.conf; /bin/sed -i "s/changeme/$(/bin/cat /etc/bareos/.rndpwd|/bin/grep CLIENT_PASSWORD|/usr/bin/cut -c 38-)/" /etc/bareos/bareos-fd.conf; /bin/cat /etc/bareos/.rndpwd|/bin/grep CLIENT_PASSWORD|/usr/bin/mail root',
+		require =>  File[ "/etc/bareos/bareos-fd.conf.puppet" ],
+		creates =>  [ "/etc/bareos/bareos-fd.conf", ],
+		path    => ['/usr/bin', '/usr/sbin', '/bin', '/sbin'],
+	}
+
+	package {bareos-client:
+		ensure=> installed,
+		allowcdrom => true,
+	}
+
+	File [ '/etc/bareos/bareos-fd.conf' ] -> Package [ 'bareos-client' ]
+	
+	service { "bareos-fd":
+		subscribe => File[ "/etc/bareos/bareos-fd.conf" ],
+		hasrestart => true,
+		require => Package['bareos-client'],
+	}
+
+}
