@@ -10,20 +10,23 @@ class common {
 		  'bash-completion',
 		  'zsh',
 		  'htop',
+		  'man-db',
 		  'lsb-release',
+		  'aptitude',
 		]:
-		ensure => installed
+		ensure => installed,
+		allowcdrom => true,
 	}
 
 	file { '/root/.bashrc':
-		mode => 644, owner => root, group => root,
+		mode => "644", owner => root, group => root,
 		source => 'puppet:///modules/common/root_bashrc'
 	}
 
 	package { 'sysstat': ensure => installed }
 
 	file { '/etc/default/sysstat':
-		mode => 644, owner => root, group => root,
+		mode => "644", owner => root, group => root,
 		source => 'puppet:///modules/common/sysstat_default',
 		require => Package['sysstat']
 	}
@@ -32,28 +35,35 @@ class common {
 
 	file { 'vimrc.local':
 		name => '/etc/vim/vimrc.local',
-		mode => 644, owner => root, group => root,
+		mode => "644", owner => root, group => root,
 		source => 'puppet:///modules/common/vimrc.local',
 		require => Package['vim']
 	}
 
-	check_alternatives { 'editor':
-		linkto => '/usr/bin/vim.basic',
-		package => "vim",
+	file { 'vimrc':
+		name => '/etc/vim/vimrc',
+		mode => "644", owner => root, group => root,
+		source => 'puppet:///modules/common/vimrc',
+		require => Package['vim']
 	}
+
+	#check_alternatives { 'editor':
+	#	linkto => '/usr/bin/vim.basic',
+	#	package => "vim",
+	#}
 
 	# enable pluginsync
-	exec { "enable pluginsync":
-		command =>  '/bin/sed -i \'/\[main\]/ a\pluginsync = true\' /etc/puppet/puppet.conf',
-		unless => '/usr/bin/awk \'/\[main\]/ { getline; print $0 }\' /etc/puppet/puppet.conf|/bin/grep -q pluginsync',
-	}
+	#exec { "enable pluginsync":
+	#	command =>  '/bin/sed -i \'/\[main\]/ a\pluginsync = true\' /etc/puppet/puppet.conf',
+	#	unless => '/usr/bin/awk \'/\[main\]/ { getline; print $0 }\' /etc/puppet/puppet.conf|/bin/grep -q pluginsync',
+	#}
 
-	file { '/etc/puppet/puppet.conf': }
+	#file { '/etc/puppet/puppet.conf': }
 
-	service { puppet:
-		hasrestart => true,
-		subscribe =>  File[ "/etc/puppet/puppet.conf" ],
-		require =>  Exec[ "enable pluginsync" ],
-	}
+	#service { puppet:
+	#	hasrestart => true,
+	#	subscribe =>  File[ "/etc/puppet/puppet.conf" ],
+	#	require =>  Exec[ "enable pluginsync" ],
+	#}
 
 }

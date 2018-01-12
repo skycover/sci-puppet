@@ -5,13 +5,17 @@ class timezone($zone='UTC') {
   }
 
   file { '/etc/timezone':
-    content => inline_template('<%= zone + "\n" %>'),
+    content => inline_template('<%= @zone + "\n" %>'),
   }
-
+  
+  file { '/etc/localtime':
+    ensure => link,
+    target => "/usr/share/zoneinfo/$zone",
+  }
   exec { 'reconfigure-tzdata':
     command => '/usr/sbin/dpkg-reconfigure -f noninteractive tzdata',
-    subscribe => File['/etc/timezone'],
-    require => File['/etc/timezone'],
+    subscribe => File['/etc/localtime'],
+    require => File['/etc/localtime'],
     refreshonly => true,
   }
 }

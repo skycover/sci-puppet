@@ -10,9 +10,10 @@ class bacula-fd {
 	file { "/etc/bacula/bacula-fd.conf": }
 
 	exec { "bacula-fd.conf-divert":
-		command => '/usr/sbin/dpkg-divert --divert /etc/bacula/bacula-fd.conf.dist --rename /etc/bacula/bacula-fd.conf; /bin/cp -a /etc/bacula/bacula-fd.conf.puppet /etc/bacula/bacula-fd.conf; /bin/sed -i "s/changeme/$(/bin/cat /etc/bacula/common_default_passwords|/bin/grep FDPASSWD|/usr/bin/cut -c 10-)/" /etc/bacula/bacula-fd.conf; /bin/cat /etc/bacula/common_default_passwords|/bin/grep FDPASSWD|/usr/bin/mail root',
+		command => 'dpkg-divert --divert /etc/bacula/bacula-fd.conf.dist --rename /etc/bacula/bacula-fd.conf; /bin/cp -a /etc/bacula/bacula-fd.conf.puppet /etc/bacula/bacula-fd.conf; /bin/sed -i "s/changeme/$(/bin/cat /etc/bacula/common_default_passwords|/bin/grep FDPASSWD|/usr/bin/cut -c 10-)/" /etc/bacula/bacula-fd.conf; /bin/cat /etc/bacula/common_default_passwords|/bin/grep FDPASSWD|/usr/bin/mail root',
 		require =>  File[ "/etc/bacula/bacula-fd.conf.puppet" ],
 		creates =>  [ "/etc/bacula/bacula-fd.conf", ],
+		path    => ['/usr/bin', '/usr/sbin', '/bin', '/sbin'],
 	}
 
 	package {bacula-fd:

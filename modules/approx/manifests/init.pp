@@ -1,68 +1,67 @@
 class approx {
-
-	package { 'approx': ensure => installed, allowcdrom => true } 
-
-	file { "/etc/approx/approx.conf":
-		owner => "root",
-		group => "root",
-		mode => 0644,
-		content => template("approx/approx.conf.erb"),
-		require => Package['approx'],
-	}
 }
 
 # approx part to deploy the local repos and cd-rom
 class approx_local {
 	include approx
-	$GPGDir = "/etc/sci/gpg"
-	$Release = "/media/sci/dists/$lsbdistcodename/Release"
+	$gpgdir = "/etc/sci/gpg"
+	$release = "/media/sci/dists/$lsbdistcodename/Release"
 	$approxModule = "/etc/puppet/modules/approx"
 
 	file { "/etc/sci":
 		owner => "root",
 		group => "root",
-		mode => 0755,
+		mode => "0755",
 		ensure => [directory, present],
 	}
-	file { "$GPGDir":
+	file { "$gpgdir":
 		owner => "root",
 		group => "root",
-		mode => 0700,
+		mode => "0700",
 		ensure => [directory, present],
 	}
-	file { "$GPGDir/sci-genkey.sh":
+	file { "$gpgdir/sci-genkey.sh":
 		owner => "root",
 		group => "root",
-		mode => 0700,
+		mode => "0700",
 		source => 'puppet:///modules/approx/sci-genkey.sh',
-		require => File["$GPGDir"],
+		require => File["$gpgdir"],
 	}
-	file { "$GPGDir/sci-key-input":
+	file { "$gpgdir/sci-key-input":
 		owner => "root",
 		group => "root",
-		mode => 0700,
+		mode => "0700",
 		content => template("approx/sci-key-input.erb"),
-		require => File["$GPGDir"],
+		require => File["$gpgdir"],
 	}
-	file { "$GPGDir/sci.pub": }
+	file { "$gpgdir/sci.pub": }
 	exec { approx_gen_key:
-		command => "$GPGDir/sci-genkey.sh",
-		creates => "$GPGDir/sci.pub",
-		require => File["$GPGDir/sci-key-input"],
+		command => "$gpgdir/sci-genkey.sh",
+		creates => "$gpgdir/sci.pub",
+		require => File["$gpgdir/sci-key-input"],
 	}
-	file { "$Release": }
-	file { "$Release.gpg": }
-	file { "$GPGDir/secring.gpg": }
+	file { "$release": }
+	file { "$release.gpg": }
+	file { "$gpgdir/secring.gpg": }
 	file { "$approxModule/files/sci.pub": }
 	exec { approx_sign_local_release:
-		command => "/usr/bin/gpg --homedir $GPGDir --sign -abs -o $Release.gpg $Release",
-		creates => "$Release.gpg",
-		require => [Exec["approx_gen_key"], File["$GPGDir/sci.pub", "$Release"]],
+		command => "/usr/bin/gpg --homedir $gpgdir --sign -abs -o $release.gpg $release",
+		creates => "$release.gpg",
+		require => [Exec["approx_gen_key"], File["$gpgdir/sci.pub", "$release"]],
 	}
 	exec { approx_publish_key:
-		command => "/bin/cp $GPGDir/sci.pub /etc/puppet/modules/approx/files/sci.pub",
+		command => "/bin/cp $gpgdir/sci.pub /etc/puppet/modules/approx/files/sci.pub",
 		creates => "/etc/puppet/modules/approx/files/sci.pub",
-		require => [Exec["approx_sign_local_release"], File["$GPGDir/sci.pub", "$Release.gpg"]],
+		require => [Exec["approx_sign_local_release"], File["$gpgdir/sci.pub", "$release.gpg"]],
+	}
+	package { 'approx': ensure => installed, allowcdrom => true } 
+
+	file { "/etc/approx/approx.conf":
+		owner => "root",
+		group => "root",
+		mode => "0644",
+		content => template("approx/approx.conf.erb"),
+		require => Package['approx'],
 	}
 }
 
@@ -73,13 +72,13 @@ class sources_list($local_sources=yes) {
 		file { "/etc/sci":
 			owner => "root",
 			group => "root",
-			mode => 0755,
+			mode => "0755",
 			ensure => [directory, present],
 			}
 		}
 
 		file { "/etc/sci/sci.pub":
-			owner => "root", group => "root", mode => 0644,
+			owner => "root", group => "root", mode => "0644",
 			source => 'puppet:///modules/approx/sci.pub',
 			require => File["/etc/sci"],
 		}
@@ -95,12 +94,12 @@ class sources_list($local_sources=yes) {
 	if $operatingsystem == "Debian" {
 		if $lsbdistcodename == "squeeze" {
 			file { "/etc/apt/sources.list":
-				owner => "root", group => "root", mode => 0644,
+				owner => "root", group => "root", mode => "0644",
 				content => template("approx/sources.list.squeeze.erb"),
 			}
 		} else {
 			file { "/etc/apt/sources.list":
-				owner => "root", group => "root", mode => 0644,
+				owner => "root", group => "root", mode => "0644",
 				content => template("approx/sources.list.erb"),
 			}
 		}
@@ -108,16 +107,16 @@ class sources_list($local_sources=yes) {
 	}
 	if $operatingsystem == "Ubuntu" {
 		file { "/etc/apt/sources.list":
-			owner => "root", group => "root", mode => 0644,
+			owner => "root", group => "root", mode => "0644",
 			content => template("approx/sources.list.ubuntu.erb"),
 		}
 	}
 	file { "/etc/apt/apt.conf.d/11periodic":
-		owner => "root", group => "root", mode => 0644,
+		owner => "root", group => "root", mode => "0644",
 		source => 'puppet:///modules/approx/11periodic',
 	}
 	file { "/etc/apt/apt.conf.d/99stable":
-		owner => "root", group => "root", mode => 0644,
+		owner => "root", group => "root", mode => "0644",
 		source  => $lsbdistcodename ? {
 			'squeeze' => 'puppet:///modules/approx/99stable.squeeze',
 			'wheezy' => 'puppet:///modules/approx/99stable.wheezy',
@@ -125,6 +124,8 @@ class sources_list($local_sources=yes) {
 			'lenny' => 'puppet:///modules/approx/99stable.lenny',
 			'precise' => 'puppet:///modules/approx/99stable.precise',
 			'trusty' => 'puppet:///modules/approx/99stable.trusty',
+			'xenial' => 'puppet:///modules/approx/99stable.xenial',
+			'stretch' => 'puppet:///modules/approx/99stable.stretch',
 			default => 'puppet:///modules/approx/99stable.wheezy',
 		},
 	}
@@ -153,3 +154,4 @@ class approx_fix_cache {
 		}
 	}
 }
+

@@ -1,5 +1,5 @@
 # security updates class
-class security-updates {
+class security_updates {
 
 	package { openssh-server: ensure => latest }
 

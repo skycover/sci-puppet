@@ -4,7 +4,7 @@ class locale($def_locale="en_US.UTF-8") {
 	file { "/etc/default/locale":
 		owner   => root,
 		group   => root,
-		mode    => 644,
+		mode    => "644",
 		content => template("locale/locale.erb"),
 		require => Package["locales"],
 	}
@@ -12,7 +12,7 @@ class locale($def_locale="en_US.UTF-8") {
 	file { "/etc/locale.gen":
 		owner   => root,
 		group   => root,
-		mode    => 644,
+		mode    => "644",
 		content => template("locale/locale.gen.erb"),
 		require => Package["locales"],
 	}
