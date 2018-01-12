@@ -1,4 +1,6 @@
-import "bind9", "approx", "nodes.pp"
+#include "bind9", "approx"
+include approx
+include bind9
 
 
 stage {pre0: before => Stage[main]}

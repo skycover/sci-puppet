@@ -32,7 +32,7 @@ class traffic {
         file { "/etc/lightsquid/lightsquid.cfg": }
 
         exec { "lightsquid.cfg-divert":
-                command => '/usr/sbin/dpkg-divert --divert /etc/lightsquid/lightsquid.cfg.dist --rename /etc/lightsquid/lightsquid.cfg; /bin/cp -a /etc/lightsquid/lightsquid.cfg.puppet /etc/lightsquid/lightsquid.cfg',
+                command => '/usr/bin/dpkg-divert --divert /etc/lightsquid/lightsquid.cfg.dist --rename /etc/lightsquid/lightsquid.cfg; /bin/cp -a /etc/lightsquid/lightsquid.cfg.puppet /etc/lightsquid/lightsquid.cfg',
                 require =>  File[ "/etc/lightsquid/lightsquid.cfg.puppet" ],
                 creates =>  [ "/etc/lightsquid/lightsquid.cfg", ],
         }

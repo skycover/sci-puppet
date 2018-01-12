@@ -2,9 +2,9 @@
 # file is ruled by puppet. resistance is futile
 #
 <% if @local_sources == "yes" %>
-deb http://apt.<%= domain %>:9999/cdrom <%= lsbdistcodename %> main
+deb http://apt.<%= @domain %>:9999/cdrom <%= @lsbdistcodename %> main
 <% end %>
-deb http://apt.<%= domain %>:9999/debian <%= lsbdistcodename %> main non-free contrib
-deb http://apt.<%= domain %>:9999/debian <%= lsbdistcodename %>-updates main non-free contrib
-deb http://apt.<%= domain %>:9999/debian <%= lsbdistcodename %>-backports main non-free contrib
-deb http://apt.<%= domain %>:9999/security <%= lsbdistcodename %>/updates main non-free contrib
+deb http://apt.<%= @domain %>:9999/debian <%= @lsbdistcodename %> main non-free contrib
+deb http://apt.<%= @domain %>:9999/debian <%= @lsbdistcodename %>-updates main non-free contrib
+deb http://apt.<%= @domain %>:9999/debian <%= @lsbdistcodename %>-backports main non-free contrib
+deb http://apt.<%= @domain %>:9999/security <%= @lsbdistcodename %>/updates main non-free contrib

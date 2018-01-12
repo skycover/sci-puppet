@@ -1,3 +1,5 @@
+class bind9 {
+}
 class bind9_chroot {
 	package { [ 'bind9' ]: ensure => installed, allowcdrom => true } 
 	package { [ 'bind9utils' ]: ensure => installed, allowcdrom => true } 
@@ -10,22 +12,23 @@ class bind9_chroot {
 	       ]:
 		owner => "root",
 		group => "root",
-		mode => 755,
+		mode => "755",
 		ensure => [directory, present],
 	}
 	file { [
 		"/var/lib/named/var/cache/bind",
 		"/var/lib/named/var/run",
+		"/var/lib/named/run",
 		"/var/lib/named/var/log",
 	       ]:
 		owner => "bind",
 		group => "bind",
-		mode => 755,
+		mode => "755",
 		ensure => [directory, present],
 		require => Package['bind9'],
 	}
 	file { '/etc/default/bind9':
-		mode => 644, owner => root, group => root,
+		mode => "644", owner => root, group => root,
 		source => 'puppet:///modules/bind9/bind9_chroot_default',
 		require => [
 			Package['bind9'],
@@ -33,7 +36,7 @@ class bind9_chroot {
 		],
 	}
 	file { '/etc/rsyslog.d/bind9_chroot':
-		mode => 644, owner => root, group => root,
+		mode => "644", owner => root, group => root,
 		source => 'puppet:///modules/bind9/bind9_chroot_rsyslog',
 		require => [
 			Package['bind9'],
@@ -53,7 +56,7 @@ class bind9_chroot {
 		require => File["/var/lib/named/dev"],
 	}
 	file { '/usr/local/sbin/relocate-bind9-chroot':
-		mode => 755, owner => root, group => root,
+		mode => "755", owner => root, group => root,
 		source => 'puppet:///modules/bind9/relocate-bind9-chroot',
 	}
 	exec {"/usr/local/sbin/relocate-bind9-chroot":
@@ -72,14 +75,15 @@ class bind9_chroot {
 	exec {"/bin/ln -s /var/lib/named/etc/bind /etc/bind":
 		onlyif => "/usr/bin/test -d /var/lib/named/etc/bind -a ! -e /etc/bind",
 	}
-	file { ["/etc/localtime", "/etc/passwd"]: }
-	exec {"/bin/cp /etc/localtime /var/lib/named/etc/":
-		require => [
-			File["/var/lib/named/etc"],
-		],
-		refreshonly => true,
-		subscribe => File['/etc/localtime'],
-	}
+#	file { ["/etc/localtime", "/etc/passwd"]: }
+	file { "/etc/passwd": }
+#	exec {"/bin/cp /etc/localtime /var/lib/named/etc/":
+#		require => [
+#			File["/var/lib/named/etc"],
+#		],
+#		refreshonly => true,
+#		subscribe => File['/etc/localtime'],
+#	}
 	exec {"/bin/egrep '^(root|bind):' /etc/passwd >/var/lib/named/etc/passwd":
 		require => [
 			File["/var/lib/named/etc"],
@@ -94,7 +98,7 @@ class bind9_sci inherits bind9_chroot {
 	file { "/etc/bind/named.conf.options":
 		owner => "root",
 		group => "bind",
-		mode => 0640,
+		mode => "0640",
 		content => template("bind9/sci/named.conf.options.erb"),
 		require =>  [ Package['bind9'],
 			Exec[ "/usr/local/sbin/relocate-bind9-chroot" ],
@@ -104,14 +108,14 @@ class bind9_sci inherits bind9_chroot {
 	file { "/etc/bind/named.conf.local.puppet":
 		owner => "root",
 		group => "bind",
-		mode => 0640,
+		mode => "0640",
 		content => template("bind9/sci/named.conf.local.erb"),
 		require =>  [ Package['bind9'],
 			Exec[ "/usr/local/sbin/relocate-bind9-chroot" ],
 		],
 	}
 	exec { 'divert named.conf.local':
-		command => '/bin/mv /etc/bind/named.conf.local /etc/bind/named.conf.local.dist; /usr/sbin/dpkg-divert --divert /etc/bind/named.conf.local.dist --rename /etc/bind/named.conf.local',
+		command => '/bin/mv /etc/bind/named.conf.local /etc/bind/named.conf.local.dist; /usr/bin/dpkg-divert --divert /etc/bind/named.conf.local.dist --rename /etc/bind/named.conf.local',
 		require => File["/etc/bind/named.conf.local.puppet"],
 		creates => "/etc/bind/named.conf.local.dist",
 	}
@@ -124,7 +128,7 @@ class bind9_sci inherits bind9_chroot {
 	file { "/etc/bind/master":
 		owner => "bind",
 		group => "root",
-		mode => 755,
+		mode => "755",
 		ensure => [directory, present],
 		require => Package['bind9'],
 	}
@@ -132,7 +136,7 @@ class bind9_sci inherits bind9_chroot {
 	file { "/etc/bind/master/$domain.puppet":
 		owner => "bind",
 		group => "bind",
-		mode => 0640,
+		mode => "0640",
 		content => template("bind9/sci/zone.erb"),
 		require => [ Package['bind9'],
                              File['/etc/bind/master'],
@@ -146,7 +150,7 @@ class bind9_sci inherits bind9_chroot {
 	file { "/etc/bind/master/in-addr.puppet":
 		owner => "bind",
 		group => "bind",
-		mode => 0640,
+		mode => "0640",
 		content => template("bind9/sci/in-addr.erb"),
 		require => [ Package['bind9'],
                              File['/etc/bind/master'],
@@ -160,7 +164,7 @@ class bind9_sci inherits bind9_chroot {
 	file { "/usr/local/sbin/create-dns-keys":
 		owner => "root",
 		group => "root",
-		mode => 755,
+		mode => "755",
 		source => 'puppet:///modules/bind9/create-dns-keys',
 		require =>  [ Package['bind9', 'bind9utils' ],
 			Exec[ "/usr/local/sbin/relocate-bind9-chroot" ],

@@ -13,9 +13,9 @@ options {
 	// Uncomment the following block, and insert the addresses replacing 
 	// the all-0's placeholder.
 
-	<% if has_variable?("sci_dns_forwarders") %>
+	<% if has_variable?("@sci_dns_forwarders") %>
 	forwarders {
-		<%= sci_dns_forwarders %>;
+		<%= @sci_dns_forwarders %>;
 	};
 	forward only;
 	<% else %>

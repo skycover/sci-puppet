@@ -13,12 +13,12 @@ $TTL 1h
      TXT   "v=spf1 a:mail.<%= @domain %> -all"
 
 ; this is the wrong record. actual mail server should be different
-<% if @sci_sci_lan_ip -%>
+<% if not @sci_sci_lan_ip.empty? and @sci_sci_lan_ip -%>
 mail	IN A <%= @sci_sci_lan_ip %>
 <% else -%>
 mail	IN A <%= @ipaddress %>
 <% end -%>
-<% if @sci_sci_lan_ip -%>
+<% if not @sci_sci_lan_ip.empty? and @sci_sci_lan_ip -%>
 <%= @hostname %>	IN A <%= @sci_sci_lan_ip %>
 <% else -%>
 <%= @hostname %>	IN A <%= @ipaddress %>
@@ -26,25 +26,25 @@ mail	IN A <%= @ipaddress %>
 apt	CNAME <%= @hostname %>
 ntp	CNAME <%= @hostname %>
 puppet	CNAME <%= @hostname %>
-<% if @sci_cluster_ip -%>
+<% if not @sci_cluster_ip.empty? and @sci_cluster_ip -%>
 <%= @sci_cluster_name %>	IN A <%= @sci_cluster_ip %>
 <% end -%>
-<% if @sci_node1_ip -%>
+<% if not @sci_node1_ip.empty? and @sci_node1_ip -%>
 <%= @sci_node1_name %>	IN A <%= @sci_node1_ip %>
 <% end -%>
-<% if @sci_node1_lan_ip -%>
+<% if not @sci_node1_lan_ip.empty? and @sci_node1_lan_ip -%>
 <%= @sci_node1_name %>-lan	IN A <%= @sci_node1_lan_ip %>
 <% end -%>
-<% if @sci_node1_san_ip -%>
+<% if not @sci_node1_san_ip.empty? and @sci_node1_san_ip -%>
 <%= @sci_node1_name %>-san	IN A <%= @sci_node1_san_ip %>
 <% end -%>
-<% if @sci_node2_name -%>
+<% if not @sci_node2_name.empty? and @sci_node2_name -%>
 <%= @sci_node2_name %>	IN A <%= @sci_node2_ip %>
 <% end -%>
-<% if @sci_node2_lan_ip -%>
+<% if not @sci_node2_lan_ip.empty? and @sci_node2_lan_ip -%>
 <%= @sci_node2_name %>-lan	IN A <%= @sci_node2_lan_ip %>
 <% end -%>
-<% if @sci_node2_san_ip -%>
+<% if not @sci_node2_san_ip.empty? and @sci_node2_san_ip -%>
 <%= @sci_node2_name %>-san	IN A <%= @sci_node2_san_ip %>
 <% end -%>
 

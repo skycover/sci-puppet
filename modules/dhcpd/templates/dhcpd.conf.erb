@@ -17,8 +17,8 @@ subnet <%= @sci_dhcp_subnet %> netmask <%= @sci_dhcp_netmask %> {
 	authoritative;
 	ddns-updates on;
 	range <%= @sci_dhcp_hostmin %> <%= @sci_dhcp_hostmax %>;
-	option routers <%= sci_dhcp_route %>;
-	option domain-name-servers <% if sci_nameserver != "127.0.0.1" %><%= @sci_nameserver %><% else %><%= @sci_dhcp_ipaddress %><% end %>;
+	option routers <%= @sci_dhcp_route %>;
+	option domain-name-servers <% if @sci_nameserver != "127.0.0.1" %><%= @sci_nameserver %><% else %><%= @sci_dhcp_ipaddress %><% end %>;
 	option domain-name "<%= @domain %>";
 	default-lease-time 604800;
 	max-lease-time 2592000;

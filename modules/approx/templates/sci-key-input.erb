@@ -8,16 +8,17 @@
 #######################################
 # parameters for the key
 
-Key-Type: DSA
-Key-Length: 1024
-Subkey-Type: ELG-E
-Subkey-Length: 2048
+Key-Type: RSA
+Key-Length: 4096
+#Subkey-Type: ELG-E
+#Subkey-Length: 2048
 
 Name-Real: SCI Service Repository
 Name-Comment: for local repositories
-Name-Email: sci@<%= domain %>
+Name-Email: sci@<%= @domain %>
 
 Expire-Date: 0
+%no-protection
 
 # perform key generation
 %commit
