@@ -126,6 +126,7 @@ class sources_list($local_sources=yes) {
 			'trusty' => 'puppet:///modules/approx/99stable.trusty',
 			'xenial' => 'puppet:///modules/approx/99stable.xenial',
 			'stretch' => 'puppet:///modules/approx/99stable.stretch',
+			'buster' => 'puppet:///modules/approx/99stable.buster',
 			default => 'puppet:///modules/approx/99stable.wheezy',
 		},
 	}
