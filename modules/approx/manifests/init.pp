@@ -136,6 +136,7 @@ class sources_list($local_sources=yes) {
 			refreshonly => true,
 			require => File["/etc/sci/sci.pub"],
 			subscribe => File['/etc/apt/sources.list'],
+            returns => [0,100],
 		}
 	} else {
 		exec{ apt-get-update:
